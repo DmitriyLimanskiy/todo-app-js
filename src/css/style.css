@@ -1,0 +1,24 @@
+.todo-item {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 0px;
+    border-bottom: 1px solid #ddd;
+}
+
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: gray;
+    opacity: 0.6;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+}
+
+button:hover {
+    transform: scale(1.2);
+}

@@ -24,7 +24,9 @@ todoForm.addEventListener('submit', (event) => {
 
     todoInput.value = ''; // очистка поля ввода
 
-    // локальное хранилище задач
+    // запишем созданную задачу в массив
+    console.log(storage.addTask(taskText));
+    console.log(storage);
 });
 
 // обработчик событий при нажатии на завершить и удалить задачу

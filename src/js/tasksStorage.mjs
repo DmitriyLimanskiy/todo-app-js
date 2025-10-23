@@ -1,4 +1,4 @@
-let nextId = 1;
+let nextId = 0;
 
 class TasksStorage {
     constructor() {
@@ -6,14 +6,12 @@ class TasksStorage {
     }
 
     addTask(text) {
-        const task = { id: nextId++, text, completed: false };
+        const task = { id: ++nextId, text, completed: false };
         this.tasks.push(task);
         return task;
     }
 
-    toggleTask(id) {
-        return (this.completed = !this.completed);
-    }
+    toggleTask(id) {}
 
     deleteTask(id) {}
 

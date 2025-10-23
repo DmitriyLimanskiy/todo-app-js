@@ -1,3 +1,5 @@
+import TasksStorage from './tasksStorage.mjs';
+
 const eventHandler = (button) => {
     // найдем ближайший li с классом todo-item
     const listItem = button.closest('.todo-item');
@@ -9,6 +11,7 @@ const eventHandler = (button) => {
 
     if (button.classList.contains('complete-btn')) {
         listItem.classList.toggle('completed');
+        
         // добавить класс выполнено, чтобы поменять стиль
     }
 };

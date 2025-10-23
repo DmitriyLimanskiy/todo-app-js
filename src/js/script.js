@@ -4,7 +4,7 @@ const todoList = document.getElementById('todo-list');
 
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {
-    event.preventDefault(); // чтобы не перезагружать страницу
+    event.preventDefault(); // убираем дефолтное действие, чтобы не перезагружать страницу
 
     const taskText = todoInput.value.trim(); // убираем пробелы в начале и в конце текста
 
@@ -14,7 +14,7 @@ todoForm.addEventListener('submit', (event) => {
     }
 
     const li = document.createElement('li'); // создание нового элемента li
-    li.classList.add('todo-item');
+    li.classList.add('todo-item'); // добавляем к элементу li класс
 
     const span = document.createElement('span');
     span.classList.add('todo-text');
@@ -28,6 +28,7 @@ todoForm.addEventListener('submit', (event) => {
     deleteBtn.classList.add('delete-btn');
     deleteBtn.textContent = '❌';
 
+    // добавляем к элементу li детей
     li.appendChild(span);
     li.appendChild(completeBtn);
     li.appendChild(deleteBtn);
@@ -38,13 +39,24 @@ todoForm.addEventListener('submit', (event) => {
 
 // обработчик событий при нажатии на завершить и удалить задачу
 todoList.addEventListener('click', (event) => {
-    const target = event.target;
+    // найдем элемент с классом кнопка
+    const button = event.target.closest('button');
+    if (!button) return;
 
-    if (target.classList.contains('delete-btn')) {
-        target.parentElement.remove(); // удалить задачу
+    // найдем ближайший li с классом todo-item
+    const listItem = button.closest('.todo-item');
+    if (!listItem) return;
+
+    console.log('Кликнули по', event.target);
+    console.log('button:', button);
+    console.log('listItem:', listItem);
+
+    if (button.classList.contains('delete-btn')) {
+        listItem.remove(); // удалить задачу
     }
 
-    if (target.classList.contains('complete-btn')) {
-        target.parentElement.classList.toggle('completed'); // пометить как выполненную
+    if (button.classList.contains('complete-btn')) {
+        listItem.classList.toggle('completed');
+        // добавить класс выполнено, чтобы поменять стиль
     }
 });

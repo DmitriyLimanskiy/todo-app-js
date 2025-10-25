@@ -52,14 +52,17 @@ storage.getTasks().forEach((task) => createTasks(task, todoList));
 // фильтрация задач: все, активные, выполненные
 filterButtons.forEach((button) => {
     button.addEventListener('click', () => {
+        // статичная подсветка выбранного фильтра
+        filterButtons.forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // фильтруем задачи
         const filter = button.dataset.filter; // 'all' 'active' 'completed'
         const filteredTasks = storage.getFilteredTasks(filter);
         renderTasks(filteredTasks, todoList);
 
         // счетчик задач
-        const counterTasks = filteredTasks.length;
-        console.log(counterTasks);
-        filterCounter.innerHTML = `Всего задач: ${counterTasks}`;
+        filterCounter.textContent = `Всего задач: ${storage.getCount(filter)}`;
     });
 });
 

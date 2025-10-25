@@ -1,64 +1,48 @@
 // app
+import eventHandler from './eventHandler.mjs';
+import createTasks from './createTask.mjs';
+import storage from './tasksStorage.mjs';
 
+// записываем в переменные получаемые элементы
 const todoForm = document.getElementById('todo-form');
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
 
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {
-    event.preventDefault(); // убираем дефолтное действие, чтобы не перезагружать страницу
+    // убираем дефолтное действие, чтобы не перезагружать страницуы
+    event.preventDefault();
 
-    const taskText = todoInput.value.trim(); // убираем пробелы в начале и в конце текста
+    // записываем в переменную текст из поля ввода и убираем пробелы в начале и в конце текста
+    const taskText = todoInput.value.trim();
 
     if (!taskText) {
         // проверка на пустую строку/null/undefind ввода
-        return;
+        return console.log('Пустая строка');
     }
 
-    const li = document.createElement('li'); // создание нового элемента li
-    li.classList.add('todo-item'); // добавляем к элементу li класс
+    // записываем в переменную создание новой задачи
+    const newTask = storage.addTask(taskText);
 
-    const span = document.createElement('span');
-    span.classList.add('todo-text');
-    span.textContent = taskText;
+    // вызываем функцию для создания садач
+    createTasks(newTask, todoList);
 
-    const completeBtn = document.createElement('button');
-    completeBtn.classList.add('complete-btn');
-    completeBtn.textContent = '✅';
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.classList.add('delete-btn');
-    deleteBtn.textContent = '❌';
-
-    // добавляем к элементу li детей
-    li.appendChild(span);
-    li.appendChild(completeBtn);
-    li.appendChild(deleteBtn);
-
-    todoList.appendChild(li);
-    todoInput.value = ''; // очистка поля ввода
+    // очистка поля ввода
+    todoInput.value = '';
 });
 
 // обработчик событий при нажатии на завершить и удалить задачу
 todoList.addEventListener('click', (event) => {
     // найдем элемент с классом кнопка
     const button = event.target.closest('button');
+    // если элемента с классом кнопка нет, то завершаем работу программы
     if (!button) return;
 
-    // найдем ближайший li с классом todo-item
-    const listItem = button.closest('.todo-item');
-    if (!listItem) return;
-
-    console.log('Кликнули по', event.target);
-    console.log('button:', button);
-    console.log('listItem:', listItem);
-
-    if (button.classList.contains('delete-btn')) {
-        listItem.remove(); // удалить задачу
-    }
-
-    if (button.classList.contains('complete-btn')) {
-        listItem.classList.toggle('completed');
-        // добавить класс выполнено, чтобы поменять стиль
-    }
+    // вызываем функцию обработчик событий
+    eventHandler(button);
 });
+
+// при запуске приложения — рендерим все сохранённые задачи
+storage.getTasks().forEach((task) => createTasks(task, todoList));
+
+export default storage;

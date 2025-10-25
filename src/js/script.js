@@ -1,32 +1,29 @@
 // app
 import eventHandler from './eventHandler.mjs';
 import createTasks from './createTasks.mjs';
-import TasksStorage from './tasksStorage.mjs';
+import storage from './tasksStorage.mjs';
 
 const todoForm = document.getElementById('todo-form');
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
 
-const storage = new TasksStorage();
-
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {
     event.preventDefault(); // убираем дефолтное действие, чтобы не перезагружать страницу
 
-    const taskText = todoInput.value.trim(); // убираем пробелы в начале и в конце текста
+    const taskText = todoInput.value.trim(); // записываем в переменную текст из поля ввода и убираем пробелы в начале и в конце текста
+    console.log(taskText);
 
     if (!taskText) {
         // проверка на пустую строку/null/undefind ввода
-        return;
+        return console.log('Пустая строка');
     }
 
-    createTasks(taskText, todoList); // вызываем функцию для создания садач
+    const newTask = storage.addTask(taskText);
+
+    createTasks(newTask, todoList); // вызываем функцию для создания садач
 
     todoInput.value = ''; // очистка поля ввода
-
-    // запишем созданную задачу в массив
-    console.log(storage.addTask(taskText));
-    console.log(storage);
 });
 
 // обработчик событий при нажатии на завершить и удалить задачу
@@ -38,10 +35,7 @@ todoList.addEventListener('click', (event) => {
     eventHandler(button);
 });
 
-// storage.getTasks().forEach(renderTask);
+// при запуске приложения — рендерим все сохранённые задачи
+storage.getTasks().forEach((task) => createTasks(task, todoList));
 
-// todoForm.addEventListener('submit', (e) => {
-//     e.preventDefault();
-//     const task = storage.addTask(input.value);
-//     renderTask(task);
-// });
+export default storage;

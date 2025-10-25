@@ -1,17 +1,18 @@
-import TasksStorage from './tasksStorage.mjs';
+import storage from './tasksStorage.mjs';
 
 const eventHandler = (button) => {
     // найдем ближайший li с классом todo-item
-    const listItem = button.closest('.todo-item');
-    if (!listItem) return;
+    const li = button.closest('.todo-item');
+    const id = Number(li.getAttribute('id'));
 
     if (button.classList.contains('delete-btn')) {
-        listItem.remove(); // удалить задачу
+        storage.deleteTask(id);
+        li.remove(); // удалить задачу
     }
 
     if (button.classList.contains('complete-btn')) {
-        listItem.classList.toggle('completed');
-        
+        storage.toggleTask(id);
+        li.classList.toggle('completed');
         // добавить класс выполнено, чтобы поменять стиль
     }
 };

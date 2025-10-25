@@ -1,10 +1,16 @@
-const createTasks = (taskText, todoList) => {
+const createTasks = (task, todoList) => {
     const li = document.createElement('li'); // создание нового элемента li
     li.classList.add('todo-item'); // добавляем к элементу li класс
 
+    li.setAttribute('id', task.id);
+
     const span = document.createElement('span');
     span.classList.add('todo-text');
-    span.textContent = taskText;
+    span.textContent = task.text;
+
+    if (task.completed) {
+        li.classList.add('completed');
+    }
 
     const completeBtn = document.createElement('button');
     completeBtn.classList.add('complete-btn');

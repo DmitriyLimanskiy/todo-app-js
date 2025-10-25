@@ -8,7 +8,9 @@ import renderTasks from './filter.mjs';
 const todoForm = document.getElementById('todo-form');
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
+
 const filterButtons = document.querySelectorAll('.todo-filter button');
+const filterCounter = document.querySelector('.todo-tasks-countet');
 
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {
@@ -53,6 +55,13 @@ filterButtons.forEach((button) => {
         const filter = button.dataset.filter; // 'all' 'active' 'completed'
         const filteredTasks = storage.getFilteredTasks(filter);
         renderTasks(filteredTasks, todoList);
+
+        // счетчик задач
+        const counterTasks = filteredTasks.length;
+        console.log(counterTasks);
+        filterCounter.innerHTML = `Всего задач: ${counterTasks}`;
     });
 });
 
+// значение фильтра по умолчанию равно общему колмчеству задач
+filterCounter.innerHTML = `Всего задач: ${storage.tasks.length}`;

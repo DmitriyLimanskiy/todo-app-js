@@ -12,9 +12,10 @@ const eventHandler = (button) => {
     }
 
     if (button.classList.contains('complete-btn')) {
+        const li = button.closest('li');
+        const id = parseInt(li.id, 10);
         storage.toggleTask(id);
-        li.classList.toggle('completed');
-        // добавить класс выполнено, чтобы поменять стиль
+        li.classList.toggle('completed'); // визуальное изменение
     }
 };
 

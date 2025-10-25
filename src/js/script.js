@@ -1,6 +1,6 @@
 // app
 import eventHandler from './eventHandler.mjs';
-import createTasks from './createTasks.mjs';
+import createTasks from './createTask.mjs';
 import storage from './tasksStorage.mjs';
 
 // записываем в переменные получаемые элементы

@@ -48,7 +48,7 @@ class TasksStorage {
 
     // получение задач из массива
     getTasks() {
-        return this.tasks;
+        return [...this.tasks];
     }
 }
 

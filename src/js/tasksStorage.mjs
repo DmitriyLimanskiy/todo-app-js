@@ -34,6 +34,17 @@ class TasksStorage {
         this.save();
     }
 
+    getFilteredTasks(filter) {
+        switch (filter) {
+            case 'active':
+                return this.tasks.filter((task) => !task.completed);
+            case 'completed':
+                return this.tasks.filter((task) => task.completed);
+            default:
+                return this.tasks;
+        }
+    }
+
     // сохраняем массив в локальное хранилище при этом превращая массив в строку
     save() {
         console.log('💾 Сохраняем задачи:', this.tasks);

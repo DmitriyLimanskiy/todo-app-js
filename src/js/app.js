@@ -2,11 +2,13 @@
 import eventHandler from './eventHandler.mjs';
 import createTasks from './createTask.mjs';
 import storage from './tasksStorage.mjs';
+import renderTasks from './filter.mjs';
 
 // записываем в переменные получаемые элементы
 const todoForm = document.getElementById('todo-form');
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
+const filterButtons = document.querySelectorAll('.todo-filter button');
 
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {
@@ -45,4 +47,12 @@ todoList.addEventListener('click', (event) => {
 // при запуске приложения — рендерим все сохранённые задачи
 storage.getTasks().forEach((task) => createTasks(task, todoList));
 
-export default storage;
+// фильтрация задач: все, активные, выполненные
+filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        const filter = button.dataset.filter; // 'all' 'active' 'completed'
+        const filteredTasks = storage.getFilteredTasks(filter);
+        renderTasks(filteredTasks, todoList);
+    });
+});
+

@@ -2,11 +2,15 @@
 import eventHandler from './eventHandler.mjs';
 import createTasks from './createTask.mjs';
 import storage from './tasksStorage.mjs';
+import renderTasks from './filter.mjs';
 
 // записываем в переменные получаемые элементы
 const todoForm = document.getElementById('todo-form');
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
+
+const filterButtons = document.querySelectorAll('.todo-filter button');
+const filterCounter = document.querySelector('.todo-tasks-countet');
 
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {
@@ -45,4 +49,22 @@ todoList.addEventListener('click', (event) => {
 // при запуске приложения — рендерим все сохранённые задачи
 storage.getTasks().forEach((task) => createTasks(task, todoList));
 
-export default storage;
+// фильтрация задач: все, активные, выполненные
+filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        // статичная подсветка выбранного фильтра
+        filterButtons.forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // фильтруем задачи
+        const filter = button.dataset.filter; // 'all' 'active' 'completed'
+        const filteredTasks = storage.getFilteredTasks(filter);
+        renderTasks(filteredTasks, todoList);
+
+        // счетчик задач
+        filterCounter.textContent = `Всего задач: ${storage.getCount(filter)}`;
+    });
+});
+
+// значение фильтра по умолчанию равно общему колмчеству задач
+filterCounter.innerHTML = `Всего задач: ${storage.tasks.length}`;

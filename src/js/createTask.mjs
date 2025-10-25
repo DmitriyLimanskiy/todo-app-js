@@ -26,6 +26,9 @@ const createTasks = (task, todoList) => {
     deleteBtn.classList.add('delete-btn');
     deleteBtn.textContent = '❌';
 
+    completeBtn.title = 'Отметить как выполненную';
+    deleteBtn.title = 'Удалить задачу';
+
     // добавляем к элементу li дочерние элементы
     li.appendChild(span);
     li.appendChild(completeBtn);

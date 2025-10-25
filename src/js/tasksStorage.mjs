@@ -34,6 +34,14 @@ class TasksStorage {
         this.save();
     }
 
+    // получаем новый массив с фильтром на активные и выполненные задачи
+    getFilteredTasks(filter) {
+        if (filter === 'active') return this.tasks.filter((t) => !t.completed);
+        if (filter === 'completed')
+            return this.tasks.filter((t) => t.completed);
+        return this.tasks;
+    }
+
     // сохраняем массив в локальное хранилище при этом превращая массив в строку
     save() {
         console.log('💾 Сохраняем задачи:', this.tasks);
@@ -49,6 +57,11 @@ class TasksStorage {
     // получение задач из массива
     getTasks() {
         return [...this.tasks];
+    }
+
+    // метод для получения количества задач
+    getCount(filter = 'all') {
+        return this.getFilteredTasks(filter).length;
     }
 }
 

@@ -3,6 +3,7 @@ import storage from './tasksStorage.mjs';
 const eventHandler = (button) => {
     // найдем ближайший li с классом todo-item
     const li = button.closest('.todo-item');
+    // получим значение id элемента в переменную
     const id = Number(li.getAttribute('id'));
 
     if (button.classList.contains('delete-btn')) {

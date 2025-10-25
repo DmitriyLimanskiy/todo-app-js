@@ -2,7 +2,8 @@ let nextId = 0;
 
 class TasksStorage {
     constructor() {
-        this.tasks = this.load(); // загрузка задач при старте
+        // загрузка задач при старте
+        this.tasks = this.load();
 
         // вычислим id для новых задач (чтобы не дублировать)
         if (this.tasks.length > 0) {
@@ -10,6 +11,7 @@ class TasksStorage {
         }
     }
 
+    // добавление в массив объекта с уникаьным id и текста из поля ввода
     addTask(text) {
         const newTask = { id: ++nextId, text, completed: false };
         this.tasks.push(newTask);
@@ -17,6 +19,7 @@ class TasksStorage {
         return newTask;
     }
 
+    // сохранение состояни (выполенена, не выполнена) задачи
     toggleTask(id) {
         const task = this.tasks.find((t) => t.id === id);
         if (task) {
@@ -25,21 +28,25 @@ class TasksStorage {
         }
     }
 
+    // удаляем из массива удаленную задачу
     deleteTask(id) {
         this.tasks = this.tasks.filter((t) => t.id !== id);
         this.save();
     }
 
+    // сохраняем массив в локальное хранилище при этом превращая массив в строку
     save() {
         console.log('💾 Сохраняем задачи:', this.tasks);
         localStorage.setItem('tasks', JSON.stringify(this.tasks));
     }
 
+    // загрузка данных из локального хранилища и парсинга строки в json
     load() {
         const saved = localStorage.getItem('tasks');
         return saved ? JSON.parse(saved) : [];
     }
 
+    // получение задач из массива
     getTasks() {
         return this.tasks;
     }

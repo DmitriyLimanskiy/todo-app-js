@@ -63,6 +63,14 @@ class TasksStorage {
     getCount(filter = 'all') {
         return this.getFilteredTasks(filter).length;
     }
+
+    updateTask(id, newText) {
+        const task = this.tasks.find((t) => t.id === id);
+        if (task) {
+            task.text = newText;
+            this.save();
+        }
+    }
 }
 
 const storage = new TasksStorage();

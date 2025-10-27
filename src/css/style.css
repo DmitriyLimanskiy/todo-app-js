@@ -166,7 +166,7 @@ button.delete-btn:hover {
 }
 
 /* === Счётчик задач === */
-.todo-tasks-countet {
+.todo-tasks-counter {
     margin-top: 15px;
     font-size: 14px;
     color: #555;
@@ -211,4 +211,9 @@ button.edit-btn:hover {
     border: 2px solid #0078ff;
     border-radius: 6px;
     outline: none;
+}
+
+.todo-date {
+    font-size: 0.8em;
+    color: #888;
 }

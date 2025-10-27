@@ -4,6 +4,7 @@ class TasksStorage {
     constructor() {
         // загрузка задач при старте
         this.tasks = this.load();
+        console.log(this.tasks);
 
         // вычислим id для новых задач (чтобы не дублировать)
         if (this.tasks.length > 0) {
@@ -13,7 +14,12 @@ class TasksStorage {
 
     // добавление в массив объекта с уникаьным id и текста из поля ввода
     addTask(text) {
-        const newTask = { id: ++nextId, text, completed: false };
+        const newTask = {
+            id: ++nextId,
+            text,
+            completed: false,
+            taskCreatedAt: new Date().toISOString(),
+        };
         this.tasks.push(newTask);
         this.save();
         return newTask;
@@ -51,7 +57,19 @@ class TasksStorage {
     // загрузка данных из локального хранилища и парсинга строки в json
     load() {
         const saved = localStorage.getItem('tasks');
-        return saved ? JSON.parse(saved) : [];
+        const tasks = saved ? JSON.parse(saved) : [];
+
+        // если у старой задачи нет даты — добавляем её сейчас
+        tasks.forEach((t) => {
+            if (!t.taskCreatedAt) {
+                t.taskCreatedAt = new Date().toISOString();
+            }
+        });
+
+        // сразу сохраняем исправленные данные
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+
+        return tasks;
     }
 
     // получение задач из массива

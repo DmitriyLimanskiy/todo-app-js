@@ -10,7 +10,7 @@ const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
 
 const filterButtons = document.querySelectorAll('.todo-filter button');
-const filterCounter = document.querySelector('.todo-tasks-countet');
+const filterCounter = document.querySelector('.todo-tasks-counter');
 
 // обработка отправки формы
 todoForm.addEventListener('submit', (event) => {

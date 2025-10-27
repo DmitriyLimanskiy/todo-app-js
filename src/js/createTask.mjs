@@ -33,6 +33,20 @@ const createTasks = (task, todoList) => {
     editBtn.classList.add('edit-btn');
     editBtn.textContent = '✏️';
 
+    // создаём элемент даты
+    const date = document.createElement('span');
+    date.classList.add('todo-date');
+
+    // превращаем ISO-дату в локальную строку
+    const dateObj = new Date(task.taskCreatedAt);
+    date.textContent = dateObj.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+
     completeBtn.title = 'Отметить как выполненную';
     deleteBtn.title = 'Удалить задачу';
 
@@ -41,6 +55,7 @@ const createTasks = (task, todoList) => {
     li.appendChild(span);
     li.appendChild(completeBtn);
     li.appendChild(deleteBtn);
+    li.appendChild(date);
 
     // возвращаем сформированную задачу вниз списка в родительский элемент
     todoList.appendChild(li);

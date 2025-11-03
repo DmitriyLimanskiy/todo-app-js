@@ -29,9 +29,19 @@
                 </button>
             </div>
 
-            <div class="todo-tasks-countet"></div>
+            <div class="todo-tasks-counter"></div>
+
+            <div class="sort-buttons">
+                <button id="sort-name" class="todo-sort-byname">а-я/a-z</button>
+                <button id="sort-date" class="todo-sort-bydate">По дате</button>
+            </div>
 
             <ul id="todo-list"></ul>
+
+            <section class="todo-list-deletedTasks">
+                <h3>Корзина</h3>
+                <ul id="deleted-list"></ul>
+            </section>
         </div>
 
         <script type="module" src="js/app.js"></script>

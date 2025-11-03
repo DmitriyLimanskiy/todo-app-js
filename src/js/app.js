@@ -1,70 +1,100 @@
-// app
 import eventHandler from './eventHandler.mjs';
-import createTasks from './createTask.mjs';
 import storage from './tasksStorage.mjs';
-import renderTasks from './filter.mjs';
+import renderTasks from './renderTasks.mjs';
 
-// записываем в переменные получаемые элементы
+// ===== DOM-элементы =====
 const todoForm = document.getElementById('todo-form');
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
-
 const filterButtons = document.querySelectorAll('.todo-filter button');
-const filterCounter = document.querySelector('.todo-tasks-countet');
+const filterCounter = document.querySelector('.todo-tasks-counter');
+const sortByNameBtn = document.getElementById('sort-name');
+const sortByDateBtn = document.getElementById('sort-date');
+const deletedList = document.getElementById('deleted-list');
 
-// обработка отправки формы
-todoForm.addEventListener('submit', (event) => {
-    // убираем дефолтное действие, чтобы не перезагружать страницуы
-    event.preventDefault();
+// ===== Состояния =====
+let currentFilter = 'all';
+let currentSort = { type: null, direction: null };
 
-    // записываем в переменную текст из поля ввода и убираем пробелы в начале и в конце текста
-    const taskText = todoInput.value.trim();
+const initApp = async () => {
+    await storage.init();
 
-    if (!taskText) {
-        // проверка на пустую строку/null/undefind ввода
-        return console.log('Пустая строка');
+    // ===== Первый рендер =====
+    renderTasks(todoList, currentFilter, currentSort);
+    filterCounter.textContent = `Всего задач: ${storage.getCount(
+        currentFilter
+    )}`;
+
+    // ===== Добавление задачи =====
+    todoForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const taskText = todoInput.value.trim();
+        if (!taskText) return;
+
+        await storage.addTask(taskText);
+        renderTasks(todoList, currentFilter, currentSort);
+        todoInput.value = '';
+        filterCounter.textContent = `Всего задач: ${storage.getCount(
+            currentFilter
+        )}`;
+    });
+
+    // ===== Завершение / удаление =====
+
+    todoList.addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        if (button.classList.contains('edit-btn')) return;
+
+        await eventHandler(button);
+        renderTasks(todoList, currentFilter, currentSort);
+        filterCounter.textContent = `Всего задач: ${storage.getCount(
+            currentFilter
+        )}`;
+    });
+
+    deletedList.addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        await eventHandler(button);
+        renderTasks(todoList, currentFilter, currentSort);
+    });
+
+    // ===== Фильтрация =====
+    filterButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach((btn) => btn.classList.remove('active'));
+            button.classList.add('active');
+            currentFilter = button.dataset.filter;
+            renderTasks(todoList, currentFilter, currentSort);
+            filterCounter.textContent = `Всего задач: ${storage.getCount(
+                currentFilter
+            )}`;
+        });
+    });
+
+    // ===== Сортировка =====
+    function toggleSort(type) {
+        if (currentSort.type !== type) {
+            currentSort = { type, direction: 'asc' };
+        } else if (currentSort.direction === 'asc') {
+            currentSort.direction = 'desc';
+        } else if (currentSort.direction === 'desc') {
+            currentSort = { type: null, direction: null }; // сброс
+        }
+
+        // визуальное состояние кнопок
+        sortByNameBtn.classList.toggle('active', currentSort.type === 'name');
+        sortByDateBtn.classList.toggle('active', currentSort.type === 'date');
+
+        renderTasks(todoList, currentFilter, currentSort);
     }
 
-    // записываем в переменную создание новой задачи
-    const newTask = storage.addTask(taskText);
+    sortByNameBtn.addEventListener('click', () => toggleSort('name'));
+    sortByDateBtn.addEventListener('click', () => toggleSort('date'));
+};
 
-    // вызываем функцию для создания садач
-    createTasks(newTask, todoList);
-
-    // очистка поля ввода
-    todoInput.value = '';
-});
-
-// обработчик событий при нажатии на завершить и удалить задачу
-todoList.addEventListener('click', (event) => {
-    // найдем элемент с классом кнопка
-    const button = event.target.closest('button');
-    // если элемента с классом кнопка нет, то завершаем работу программы
-    if (!button) return;
-
-    // вызываем функцию обработчик событий
-    eventHandler(button);
-});
-
-// при запуске приложения — рендерим все сохранённые задачи
-storage.getTasks().forEach((task) => createTasks(task, todoList));
-
-// фильтрация задач: все, активные, выполненные
-filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-        // статичная подсветка выбранного фильтра
-        filterButtons.forEach((btn) => btn.classList.remove('active'));
-        button.classList.add('active');
-
-        // фильтруем задачи
-        const filter = button.dataset.filter; // 'all' 'active' 'completed'
-        const filteredTasks = storage.getFilteredTasks(filter);
-        renderTasks(filteredTasks, todoList);
-
-        // счетчик задач
-        filterCounter.textContent = `Всего задач: ${storage.getCount(filter)}`;
-    });
-});
-
-// значение фильтра по умолчанию равно общему колмчеству задач
-filterCounter.innerHTML = `Всего задач: ${storage.tasks.length}`;
+// Запускаем инициализацию
+initApp();

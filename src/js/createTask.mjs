@@ -46,14 +46,26 @@ const createTask = (task, todoList) => {
         if (li.classList.contains('editing')) return;
         li.classList.add('editing');
 
-        const input = document.createElement('input');
-        input.type = 'text';
+        const input = document.createElement('textarea');
         input.value = task.text;
         input.classList.add('edit-input');
         span.replaceWith(input);
         input.focus();
 
+        // Авто-высота под текст
+        const resizeHeight = () => {
+            input.style.height = 'auto';
+            input.style.height = input.scrollHeight + 'px';
+        };
+        resizeHeight();
+        input.addEventListener('input', resizeHeight);
+
+        let saved = false;
+
         const save = () => {
+            if (saved) return;
+            saved = true;
+
             const newText = input.value.trim();
             if (newText && newText !== task.text) {
                 storage.updateTask(task.id, newText);
@@ -66,7 +78,10 @@ const createTask = (task, todoList) => {
 
         input.addEventListener('blur', save);
         input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') save();
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                save();
+            }
         });
     };
 

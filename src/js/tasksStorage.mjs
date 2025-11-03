@@ -57,7 +57,6 @@ class TasksStorage {
 
         this.tasks = this.tasks.filter((t) => t.id !== id);
         this.deletedTasks.push(task);
-        console.log(this.deletedTasks);
         await storageService.save(this.tasks, this.deletedTasks);
     }
 

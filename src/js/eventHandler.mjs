@@ -1,5 +1,6 @@
 import storage from './tasksStorage.mjs';
 
+// ===== функция для отслеживания нажатий на кнопки задач =====
 const eventHandler = async (button) => {
     const li = button.closest('.todo-item');
     const id = Number(li?.id);
@@ -16,17 +17,8 @@ const eventHandler = async (button) => {
     }
 
     if (button.classList.contains('complete-btn')) {
-        await storage.toggleTask(id);
+        storage.toggleTask(id);
         li.classList.toggle('completed');
-    }
-
-    if (button.classList.contains('edit-btn')) {
-        const textEl = li.querySelector('.task-text');
-        const newText = prompt('Измените задачу', textEl.textContent);
-        if (newText && newText.trim()) {
-            await storage.updateTask(id, newText.trim());
-            textEl.textContent = newText.trim();
-        }
     }
 };
 

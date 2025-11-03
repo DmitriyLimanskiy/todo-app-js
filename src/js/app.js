@@ -40,9 +40,12 @@ const initApp = async () => {
     });
 
     // ===== Завершение / удаление =====
+
     todoList.addEventListener('click', async (event) => {
         const button = event.target.closest('button');
         if (!button) return;
+
+        if (button.classList.contains('edit-btn')) return;
 
         await eventHandler(button);
         renderTasks(todoList, currentFilter, currentSort);

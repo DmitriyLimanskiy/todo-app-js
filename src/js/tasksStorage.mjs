@@ -1,18 +1,15 @@
 let nextId = 0;
 
 class TasksStorage {
+    // ===== конструктор который создает массив с объектами(задачами) =====
     constructor() {
-        // загрузка задач при старте
         this.tasks = this.load();
-        console.log(this.tasks);
-
-        // вычислим id для новых задач (чтобы не дублировать)
         if (this.tasks.length > 0) {
             nextId = Math.max(...this.tasks.map((t) => t.id));
         }
     }
 
-    // добавление в массив объекта с уникаьным id и текста из поля ввода
+    // ===== метод для добавления задач =====
     addTask(text) {
         const newTask = {
             id: ++nextId,
@@ -25,7 +22,7 @@ class TasksStorage {
         return newTask;
     }
 
-    // сохранение состояни (выполенена, не выполнена) задачи
+    // ===== метод для переключения состояния задач (завершена или нет) =====
     toggleTask(id) {
         const task = this.tasks.find((t) => t.id === id);
         if (task) {
@@ -34,54 +31,13 @@ class TasksStorage {
         }
     }
 
-    // удаляем из массива удаленную задачу
+    // ===== метод для удаления задач =====
     deleteTask(id) {
         this.tasks = this.tasks.filter((t) => t.id !== id);
         this.save();
     }
 
-    // получаем новый массив с фильтром на активные и выполненные задачи
-    getFilteredTasks(filter) {
-        if (filter === 'active') return this.tasks.filter((t) => !t.completed);
-        if (filter === 'completed')
-            return this.tasks.filter((t) => t.completed);
-        return this.tasks;
-    }
-
-    // сохраняем массив в локальное хранилище при этом превращая массив в строку
-    save() {
-        console.log('💾 Сохраняем задачи:', this.tasks);
-        localStorage.setItem('tasks', JSON.stringify(this.tasks));
-    }
-
-    // загрузка данных из локального хранилища и парсинга строки в json
-    load() {
-        const saved = localStorage.getItem('tasks');
-        const tasks = saved ? JSON.parse(saved) : [];
-
-        // если у старой задачи нет даты — добавляем её сейчас
-        tasks.forEach((t) => {
-            if (!t.taskCreatedAt) {
-                t.taskCreatedAt = new Date().toISOString();
-            }
-        });
-
-        // сразу сохраняем исправленные данные
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-
-        return tasks;
-    }
-
-    // получение задач из массива
-    getTasks() {
-        return [...this.tasks];
-    }
-
-    // метод для получения количества задач
-    getCount(filter = 'all') {
-        return this.getFilteredTasks(filter).length;
-    }
-
+    // ===== метод для текста в задаче =====
     updateTask(id, newText) {
         const task = this.tasks.find((t) => t.id === id);
         if (task) {
@@ -89,28 +45,64 @@ class TasksStorage {
             this.save();
         }
     }
+
+    // ===== метод для фильтрации задач =====
+    getFilteredTasks(filter) {
+        if (filter === 'active') return this.tasks.filter((t) => !t.completed);
+        if (filter === 'completed')
+            return this.tasks.filter((t) => t.completed);
+        return this.tasks;
+    }
+
+    // ===== метод для сортировки задач =====
+    sortTasks(tasks, type, direction) {
+        if (!type || !direction) return [...tasks];
+
+        const sorted = [...tasks];
+        if (type === 'name') {
+            sorted.sort((a, b) => {
+                const nameA = a.text.toLowerCase();
+                const nameB = b.text.toLowerCase();
+                if (nameA < nameB) return direction === 'asc' ? -1 : 1;
+                if (nameA > nameB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        if (type === 'date') {
+            sorted.sort((a, b) => {
+                const dateA = new Date(a.taskCreatedAt);
+                const dateB = new Date(b.taskCreatedAt);
+                return direction === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+        }
+
+        return sorted;
+    }
+
+    // ===== метод для подсчета количества задач =====
+    getCount(filter = 'all') {
+        return this.getFilteredTasks(filter).length;
+    }
+
+    // ===== метод для сохранения задач в local storage =====
+    save() {
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    }
+
+    // ===== метод для загрузки задач из local storage =====
+    load() {
+        const saved = localStorage.getItem('tasks');
+        const tasks = saved ? JSON.parse(saved) : [];
+
+        tasks.forEach((t) => {
+            if (!t.taskCreatedAt) t.taskCreatedAt = new Date().toISOString();
+        });
+
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        return tasks;
+    }
 }
 
 const storage = new TasksStorage();
-
 export default storage;
-
-/*
-localStorage — это встроенное в браузер хранилище.
-
-Работает как “мини-база данных” прямо у пользователя.
-
-Хранит данные в формате строк (string), и не стирается после перезагрузки.
-
-Методы:
-
-localStorage.setItem('ключ', 'значение'); // сохранить
-localStorage.getItem('ключ'); // получить
-localStorage.removeItem('ключ'); // удалить
-
-
-Так как localStorage умеет хранить только строки, объекты и массивы нужно сериализовать:
-
-const json = JSON.stringify(tasks); // объект → строка
-const tasks = JSON.parse(json);     // строка → объект
-*/

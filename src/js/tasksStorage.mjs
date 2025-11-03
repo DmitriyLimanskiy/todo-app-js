@@ -1,16 +1,35 @@
+import storageService from './storageServies.mjs';
+
 let nextId = 0;
 
 class TasksStorage {
     // ===== конструктор который создает массив с объектами(задачами) =====
     constructor() {
-        this.tasks = this.load();
+        this.tasks = [];
+        this.deletedTasks = [];
+    }
+
+    async init() {
+        const { tasks, deletedTasks } = await storageService.load();
+        this.tasks = tasks;
+        this.deletedTasks = deletedTasks;
+
         if (this.tasks.length > 0) {
             nextId = Math.max(...this.tasks.map((t) => t.id));
         }
+
+        // добавляем дату, если её нет
+        [...this.tasks, ...this.deletedTasks].forEach((t) => {
+            if (!t.taskCreatedAt) {
+                t.taskCreatedAt = new Date().toISOString();
+            }
+        });
+
+        await storageService.saveAll(this.tasks, this.deletedTasks);
     }
 
     // ===== метод для добавления задач =====
-    addTask(text) {
+    async addTask(text) {
         const newTask = {
             id: ++nextId,
             text,
@@ -18,31 +37,52 @@ class TasksStorage {
             taskCreatedAt: new Date().toISOString(),
         };
         this.tasks.push(newTask);
-        this.save();
+        await storageService.save(this.tasks);
         return newTask;
     }
 
     // ===== метод для переключения состояния задач (завершена или нет) =====
-    toggleTask(id) {
+    async toggleTask(id) {
         const task = this.tasks.find((t) => t.id === id);
         if (task) {
             task.completed = !task.completed;
-            this.save();
+            await storageService.save(this.tasks);
         }
     }
 
     // ===== метод для удаления задач =====
-    deleteTask(id) {
+    async deleteTask(id) {
+        const task = this.tasks.find((t) => t.id === id);
+        if (!task) return;
+
         this.tasks = this.tasks.filter((t) => t.id !== id);
-        this.save();
+        this.deletedTasks.push(task);
+        console.log(this.deletedTasks);
+        await storageService.save(this.tasks, this.deletedTasks);
     }
 
-    // ===== метод для текста в задаче =====
-    updateTask(id, newText) {
+    // ===== метод для восстановления задачи из корзины =====
+    async restoreTask(id) {
+        const task = this.deletedTasks.find((t) => t.id === id);
+        if (!task) return;
+
+        this.deletedTasks = this.deletedTasks.filter((t) => t.id !== id);
+        this.tasks.push(task);
+        await storageService.save(this.tasks, this.deletedTasks);
+    }
+
+    // ===== метод для удаления задачи из корзины =====
+    async permanentlyDeleteTask(id) {
+        this.deletedTasks = this.deletedTasks.filter((t) => t.id !== id);
+        await storageService.saveAll(this.tasks, this.deletedTasks);
+    }
+
+    // ===== метод для изменения текста в задаче =====
+    async updateTask(id, newText) {
         const task = this.tasks.find((t) => t.id === id);
         if (task) {
             task.text = newText;
-            this.save();
+            await storageService.save(this.tasks);
         }
     }
 
@@ -83,24 +123,6 @@ class TasksStorage {
     // ===== метод для подсчета количества задач =====
     getCount(filter = 'all') {
         return this.getFilteredTasks(filter).length;
-    }
-
-    // ===== метод для сохранения задач в local storage =====
-    save() {
-        localStorage.setItem('tasks', JSON.stringify(this.tasks));
-    }
-
-    // ===== метод для загрузки задач из local storage =====
-    load() {
-        const saved = localStorage.getItem('tasks');
-        const tasks = saved ? JSON.parse(saved) : [];
-
-        tasks.forEach((t) => {
-            if (!t.taskCreatedAt) t.taskCreatedAt = new Date().toISOString();
-        });
-
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        return tasks;
     }
 }
 

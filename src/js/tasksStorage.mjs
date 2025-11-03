@@ -25,7 +25,7 @@ class TasksStorage {
             }
         });
 
-        await storageService.saveAll(this.tasks, this.deletedTasks);
+        await storageService.save(this.tasks, this.deletedTasks);
     }
 
     // ===== метод для добавления задач =====
@@ -74,7 +74,7 @@ class TasksStorage {
     // ===== метод для удаления задачи из корзины =====
     async permanentlyDeleteTask(id) {
         this.deletedTasks = this.deletedTasks.filter((t) => t.id !== id);
-        await storageService.saveAll(this.tasks, this.deletedTasks);
+        await storageService.save(this.tasks, this.deletedTasks);
     }
 
     // ===== метод для изменения текста в задаче =====

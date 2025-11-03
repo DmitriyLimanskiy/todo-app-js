@@ -10,6 +10,7 @@ const filterButtons = document.querySelectorAll('.todo-filter button');
 const filterCounter = document.querySelector('.todo-tasks-counter');
 const sortByNameBtn = document.getElementById('sort-name');
 const sortByDateBtn = document.getElementById('sort-date');
+const deletedList = document.getElementById('deleted-list');
 
 // ===== Состояния =====
 let currentFilter = 'all';
@@ -48,6 +49,14 @@ const initApp = async () => {
         filterCounter.textContent = `Всего задач: ${storage.getCount(
             currentFilter
         )}`;
+    });
+
+    deletedList.addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        await eventHandler(button);
+        renderTasks(todoList, currentFilter, currentSort);
     });
 
     // ===== Фильтрация =====
